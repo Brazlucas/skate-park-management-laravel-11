@@ -9,10 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('rentals', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('skate_park_id')->constrained()->onDelete('cascade');
+            $table->string('renter_name');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time');
             $table->timestamps();
         });
     }

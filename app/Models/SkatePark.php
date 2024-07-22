@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class SkatePark extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'location',
+    ];
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
 }
