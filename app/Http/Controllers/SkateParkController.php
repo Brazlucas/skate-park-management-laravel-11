@@ -3,62 +3,59 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\Contracts\SkateParkRepositoryInterface;
 
 class SkateParkController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $skateParks;
+
+    public function __construct(SkateParkRepositoryInterface $skateParks)
+    {
+        $this->skateParks = $skateParks;
+    }
+
     public function index()
     {
-        //
+        return $this->skateParks->all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        return $this->skateParks->find($id);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
+        ]);
+
+        $skatePark = $this->skateParks->create($validated);
+
+        return response()->json($skatePark, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
+        ]);
+
+        $skatePark = $this->skateParks->find($id);
+        $this->skateParks->update($skatePark, $validated);
+
+        return response()->json($skatePark);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $skatePark = $this->skateParks->find($id);
+        $this->skateParks->delete($skatePark);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(null, 204);
     }
 }
