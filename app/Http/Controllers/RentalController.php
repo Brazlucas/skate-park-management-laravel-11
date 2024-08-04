@@ -2,63 +2,75 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rental;
+use App\Repositories\Contracts\RentalRepositoryInterface;
 use Illuminate\Http\Request;
 
 class RentalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $rentalRepository;
+
+    public function __construct(RentalRepositoryInterface $rentalRepository)
+    {
+        $this->rentalRepository = $rentalRepository;
+    }
+
     public function index()
     {
-        //
+        return response()->json($this->rentalRepository->all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'skate_park_id' => 'required|exists:skate_parks,id',
+            'renter_name' => 'required|string|max:255',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+        ]);
+
+        $rental = $this->rentalRepository->create($validatedData);
+
+        return response()->json($rental, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $rental = $this->rentalRepository->find($id);
+
+        if (!$rental) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json($rental);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'skate_park_id' => 'required|exists:skate_parks,id',
+            'renter_name' => 'required|string|max:255',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+        ]);
+
+        $rental = $this->rentalRepository->update($id, $validatedData);
+
+        if (!$rental) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json($rental);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $deleted = $this->rentalRepository->delete($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if (!$deleted) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json(['message' => 'Rental deleted successfully']);
     }
 }
