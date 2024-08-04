@@ -32,7 +32,7 @@ class Rental extends Model
                 })->exists();
 
             if ($conflict) {
-                throw new \Exception('The skate park is already rented for the given time period.');
+                return throw new \Exception('The skate park is already rented for the given time period.');
             }
         });
     }

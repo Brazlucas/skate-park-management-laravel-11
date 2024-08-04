@@ -2,65 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Rental;
 use App\Repositories\Contracts\RentalRepositoryInterface;
-use App\Repositories\Contracts\SkateParkRepositoryInterface;
+use Illuminate\Http\Request;
 
 class RentalController extends Controller
 {
-    protected $rentals;
-    protected $skateParks;
+    protected $rentalRepository;
 
-    public function __construct(RentalRepositoryInterface $rentals, SkateParkRepositoryInterface $skateParks)
+    public function __construct(RentalRepositoryInterface $rentalRepository)
     {
-        $this->rentals = $rentals;
-        $this->skateParks = $skateParks;
+        $this->rentalRepository = $rentalRepository;
     }
 
-    public function index($skateParkId)
+    public function index()
     {
-        $skatePark = $this->skateParks->find($skateParkId);
-        return $this->rentals->allForSkatePark($skatePark);
+        return response()->json($this->rentalRepository->all());
     }
 
-    public function show($skateParkId, $rentalId)
+    public function store(Request $request)
     {
-        return $this->rentals->find($rentalId);
-    }
-
-    public function store(Request $request, $skateParkId)
-    {
-        $validated = $request->validate([
+        $validatedData = $request->validate([
+            'skate_park_id' => 'required|exists:skate_parks,id',
             'renter_name' => 'required|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
         ]);
 
-        $skatePark = $this->skateParks->find($skateParkId);
-        $rental = $this->rentals->createForSkatePark($skatePark, $validated);
+        $rental = $this->rentalRepository->create($validatedData);
 
         return response()->json($rental, 201);
     }
 
-    public function update(Request $request, $skateParkId, $rentalId)
+    public function show($id)
     {
-        $validated = $request->validate([
+        $rental = $this->rentalRepository->find($id);
+
+        if (!$rental) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json($rental);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'skate_park_id' => 'required|exists:skate_parks,id',
             'renter_name' => 'required|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
         ]);
 
-        $rental = $this->rentals->find($rentalId);
-        $this->rentals->update($rental, $validated);
+        $rental = $this->rentalRepository->update($id, $validatedData);
+
+        if (!$rental) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
 
         return response()->json($rental);
     }
 
-    public function destroy($skateParkId, $rentalId)
+    public function destroy($id)
     {
-        $rental = $this->rentals->find($rentalId);
-        $this->rentals->delete($rental);
+        $deleted = $this->rentalRepository->delete($id);
 
-        return response()->json(null, 204);
+        if (!$deleted) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json(['message' => 'Rental deleted successfully']);
     }
 }

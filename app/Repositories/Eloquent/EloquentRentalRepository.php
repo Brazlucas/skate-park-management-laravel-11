@@ -3,38 +3,45 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Rental;
-use App\Models\SkatePark;
 use App\Repositories\Contracts\RentalRepositoryInterface;
 
 class EloquentRentalRepository implements RentalRepositoryInterface
 {
-    public function allForSkatePark(SkatePark $skatePark)
+    public function all()
     {
-        return $skatePark->rentals;
+        return Rental::all();
     }
 
     public function find($id)
     {
-        return Rental::findOrFail($id);
+        return Rental::find($id);
     }
 
-    public function createForSkatePark(SkatePark $skatePark, array $data)
+    public function create(array $data)
     {
-        $rental = new Rental($data);
-        $rental->skate_park_id = $skatePark->id;
-        $skatePark->rentals()->save($rental);
-
-        return $rental;
+        return Rental::create($data);
     }
 
-    public function update(Rental $rental, array $data)
+    public function update($id, array $data)
     {
-        $rental->update($data);
-        return $rental;
+        $rental = Rental::find($id);
+
+        if ($rental) {
+            $rental->update($data);
+            return $rental;
+        }
+
+        return null;
     }
 
-    public function delete(Rental $rental)
+    public function delete($id)
     {
-        $rental->delete();
+        $rental = Rental::find($id);
+
+        if ($rental) {
+            return $rental->delete();
+        }
+
+        return false;
     }
 }
