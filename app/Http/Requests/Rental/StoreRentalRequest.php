@@ -2,10 +2,14 @@
 
 namespace App\Http\Requests\Rental;
 
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRentalRequest extends Request
+class StoreRentalRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
     public function rules(): array
     {
         return [

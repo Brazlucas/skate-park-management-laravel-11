@@ -2,10 +2,16 @@
 
 namespace App\Http\Requests\SkatePark;
 
-use Illuminate\Http\Request;
 
-class StoreSkateParkRequest extends Request
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreSkateParkRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function rules(): array
     {
         return [

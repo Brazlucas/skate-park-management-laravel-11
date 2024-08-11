@@ -2,59 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Repositories\Contracts\SkateParkRepositoryInterface;
 use App\Http\Requests\SkatePark\StoreSkateParkRequest;
 
 class SkateParkController extends Controller
-{
-    protected $skateParkRepository;
-
-    public function __construct(SkateParkRepositoryInterface $skateParks)
-    {
-        $this->skateParkRepository = $skateParks;
+{   
+    /**
+     * SkateParkController constructor.
+     */
+    public function __construct(
+        protected SkateParkRepositoryInterface $repository,
+    ) {
     }
 
     public function index()
     {
-        return $this->skateParkRepository->all();
+        return $this->repository->all();
     }
 
     public function show($id)
     {
-        return $this->skateParkRepository->find($id);
+        return $this->repository->find($id);
     }
 
-    public function store(Request $request)
+    public function store(StoreSkateParkRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location' => 'required|string|max:255',
-        ]);
+        $validated = $request->validated();
 
-        $skatePark = $this->skateParkRepository->create($validated);
+        $skatePark = $this->repository->create($validated);
 
         return response()->json($skatePark, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(StoreSkateParkRequest $request, $id): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location' => 'required|string|max:255',
-        ]);
+        $validated = $request->validated();
 
-        $skatePark = $this->skateParkRepository->find($id);
-        $this->skateParkRepository->update($skatePark, $validated);
+        $skatePark = $this->repository->find($id);
+        $this->repository->update($skatePark, $validated);
 
         return response()->json($skatePark);
     }
 
     public function destroy($id)
     {
-        $deleted = $this->skateParkRepository->delete($id);
+        $deleted = $this->repository->delete($id);
 
         if (!$deleted) {
             return response()->json(['message' => 'Skate park not found'], 404);
