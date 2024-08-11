@@ -4,39 +4,41 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Rental;
 use App\Repositories\Contracts\RentalRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class EloquentRentalRepository implements RentalRepositoryInterface
 {
-    public function all()
+    public function all(): Collection
     {
         return Rental::all();
     }
 
-    public function find($id)
+    public function find($id): Model
     {
         return Rental::find($id);
     }
 
-    public function create(array $data)
+    public function create(array $data): Model
     {
         return Rental::create($data);
     }
 
-    public function update($id, array $data)
+    public function update($rentalId, array $data): Model|bool
     {
-        $rental = Rental::find($id);
+        $rental = Rental::findOrFail($rentalId);
 
         if ($rental) {
             $rental->update($data);
             return $rental;
         }
 
-        return null;
+        return false;
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
-        $rental = Rental::find($id);
+        $rental = $this->find($id);
 
         if ($rental) {
             return $rental->delete();

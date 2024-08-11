@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rental;
 use App\Repositories\Contracts\RentalRepositoryInterface;
+use App\Http\Requests\Rental\StoreRentalRequest;
 use Illuminate\Http\Request;
 
 class RentalController extends Controller

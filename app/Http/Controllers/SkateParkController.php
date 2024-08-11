@@ -4,24 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\SkateParkRepositoryInterface;
+use App\Http\Requests\SkatePark\StoreSkateParkRequest;
 
 class SkateParkController extends Controller
 {
-    protected $skateParks;
+    protected $skateParkRepository;
 
     public function __construct(SkateParkRepositoryInterface $skateParks)
     {
-        $this->skateParks = $skateParks;
+        $this->skateParkRepository = $skateParks;
     }
 
     public function index()
     {
-        return $this->skateParks->all();
+        return $this->skateParkRepository->all();
     }
 
     public function show($id)
     {
-        return $this->skateParks->find($id);
+        return $this->skateParkRepository->find($id);
     }
 
     public function store(Request $request)
@@ -32,7 +33,7 @@ class SkateParkController extends Controller
             'location' => 'required|string|max:255',
         ]);
 
-        $skatePark = $this->skateParks->create($validated);
+        $skatePark = $this->skateParkRepository->create($validated);
 
         return response()->json($skatePark, 201);
     }
@@ -45,17 +46,20 @@ class SkateParkController extends Controller
             'location' => 'required|string|max:255',
         ]);
 
-        $skatePark = $this->skateParks->find($id);
-        $this->skateParks->update($skatePark, $validated);
+        $skatePark = $this->skateParkRepository->find($id);
+        $this->skateParkRepository->update($skatePark, $validated);
 
         return response()->json($skatePark);
     }
 
     public function destroy($id)
     {
-        $skatePark = $this->skateParks->find($id);
-        $this->skateParks->delete($skatePark);
+        $deleted = $this->skateParkRepository->delete($id);
 
-        return response()->json(null, 204);
+        if (!$deleted) {
+            return response()->json(['message' => 'Skate park not found'], 404);
+        }
+
+        return response()->json(['message' => 'Skate park deleted successfully']);
     }
 }
