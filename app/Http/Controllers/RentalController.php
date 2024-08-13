@@ -2,63 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Repositories\Contracts\RentalRepositoryInterface;
+use App\Http\Requests\Rental\StoreRentalRequest;
+use Illuminate\Http\JsonResponse;
 
 class RentalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
+     /**
+     * RentalController constructor.
      */
+    public function __construct(
+        protected RentalRepositoryInterface $repository,
+    ) {
+    }
+
     public function index()
     {
-        //
+        return response()->json($this->repository->all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreRentalRequest $request): JsonResponse
     {
-        //
+        $validated = $request->validated();
+
+        $rental = $this->repository->create($validated);
+
+        return response()->json($rental, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show($id)
     {
-        //
+        $rental = $this->repository->find($id);
+
+        if (!$rental) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json($rental);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(StoreRentalRequest $request, $id): JsonResponse
     {
-        //
+        $validated = $request->validated();
+
+        $rental = $this->repository->update($id, $validated);
+
+        if (!$rental) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
+
+        return response()->json($rental);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $deleted = $this->repository->delete($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        if (!$deleted) {
+            return response()->json(['message' => 'Rental not found'], 404);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['message' => 'Rental deleted successfully']);
     }
 }

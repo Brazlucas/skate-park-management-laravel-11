@@ -2,63 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Repositories\Contracts\SkateParkRepositoryInterface;
+use App\Http\Requests\SkatePark\StoreSkateParkRequest;
 
 class SkateParkController extends Controller
-{
+{   
     /**
-     * Display a listing of the resource.
+     * SkateParkController constructor.
      */
+    public function __construct(
+        protected SkateParkRepositoryInterface $repository,
+    ) {
+    }
+
     public function index()
     {
-        //
+        return $this->repository->all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        return $this->repository->find($id);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreSkateParkRequest $request): JsonResponse
     {
-        //
+        $validated = $request->validated();
+
+        $skatePark = $this->repository->create($validated);
+
+        return response()->json($skatePark, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(StoreSkateParkRequest $request, $id): JsonResponse
     {
-        //
+        $validated = $request->validated();
+
+        $skatePark = $this->repository->find($id);
+        $this->repository->update($skatePark, $validated);
+
+        return response()->json($skatePark);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $deleted = $this->repository->delete($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        if (!$deleted) {
+            return response()->json(['message' => 'Skate park not found'], 404);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['message' => 'Skate park deleted successfully']);
     }
 }
