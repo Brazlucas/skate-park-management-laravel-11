@@ -24,6 +24,7 @@ class AuthController extends Controller
             if (!Auth::attempt($credentials)) {
                 if ($user) {
                     $user->increment('login_attempts');
+                    $loginAttempts = 3 - $user->login_attempts;
 
                     // Lock the account if the number of attempts exceeds 3
                     if ($user->login_attempts >= 3) {
@@ -31,6 +32,7 @@ class AuthController extends Controller
                     }
 
                     $user->save();
+                    throw new \Exception('Login ou senha inválidos (' . $loginAttempts . ') tentativas restantes', 401);
                 }
 
                 throw new \Exception('Login ou senha inválidos', 401);
@@ -48,7 +50,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'token' => $token,
-                'message' => 'Login successful',
+                'message' => 'Logado com sucesso',
             ], 200);
 
         } catch (\Exception $e) {
@@ -64,11 +66,11 @@ class AuthController extends Controller
             $request->user()->tokens()->delete();
 
             return response()->json([
-                'message' => 'Logged out successfully'
+                'message' => 'Deslogado com sucesso'
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error logging out' . $e->getMessage()
+                'message' => 'Erro ao deslogar' . $e->getMessage()
             ], 500);
         }
     }
