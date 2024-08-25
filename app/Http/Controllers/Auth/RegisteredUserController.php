@@ -40,7 +40,8 @@ class RegisteredUserController extends Controller
             Auth::login($user);
 
             return response()->json([
-                'data' => $user
+                'data' => $user,
+                'message' => 'Usuário registrado com sucesso',
             ], 201);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
