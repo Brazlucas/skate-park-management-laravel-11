@@ -14,6 +14,7 @@ class UserInfoController extends Controller
     public function show(): JsonResponse
     {
         try {
+            dd(Auth::user());
             $user = Auth::user();
 
             if (!$user) {
