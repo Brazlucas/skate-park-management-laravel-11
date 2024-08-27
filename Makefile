@@ -6,7 +6,7 @@ build-dev: ## Build the development environment
 	docker-compose -f ./docker/development/docker-compose.yml build
 
 run-dev: ## Run the development environment
-	docker-compose -f ./docker/development/docker-compose.yml up
+	docker-compose -f ./docker/development/docker-compose.yml up -d
 
 stop-dev: ## Stop the development environment
 	docker-compose -f ./docker/development/docker-compose.yml down

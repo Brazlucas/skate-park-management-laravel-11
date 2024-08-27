@@ -11,10 +11,9 @@ class UserInfoController extends Controller
     /**
      * Get the authenticated user's information.
      */
-    public function show(): JsonResponse
+    public function index(): JsonResponse
     {
         try {
-            dd(Auth::user());
             $user = Auth::user();
 
             if (!$user) {
