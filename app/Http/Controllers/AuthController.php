@@ -4,56 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Services\AuthService;
+use Exception;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected AuthService $authService,
+    ) {
+    }
+
     public function login(Request $request): JsonResponse
     {
         try {
             $credentials = $request->only('email', 'password');
-            $user = User::where('email', $credentials['email'])->first();
+            $response = $this->authService->login($credentials);
 
-            // Check if the account is locked
-            if ($user && $user->locked_until && $user->locked_until > now()) {
-                throw new \Exception('Conta temporariamente bloqueada devido a múltiplas tentativas falhadas de acesso.', 403);
-            }
-
-            // Attempt to log in
-            if (!Auth::attempt($credentials)) {
-                if ($user) {
-                    $user->increment('login_attempts');
-                    $loginAttempts = 3 - $user->login_attempts;
-
-                    // Lock the account if the number of attempts exceeds 3
-                    if ($user->login_attempts >= 3) {
-                        $user->locked_until = now()->addMinutes(15); // Lock for 15 minutes
-                    }
-
-                    $user->save();
-                    throw new \Exception('Login ou senha inválidos (' . $loginAttempts . ') tentativas restantes', 401);
-                }
-
-                throw new \Exception('Login ou senha inválidos', 401);
-            }
-
-            // Reset login attempts on successful login
-            if ($user) {
-                $user->login_attempts = 0;
-                $user->locked_until = null;
-                $user->save();
-            }
-
-            // Generate a new token
-            $token = $request->user()->createToken('auth_token')->plainTextToken;
-
-            return response()->json([
-                'token' => $token,
-                'message' => 'Logado com sucesso',
-            ], 200);
-
-        } catch (\Exception $e) {
+            return response()->json($response, 200);
+        } catch (Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
             ], $e->getCode() ?: 500);
@@ -63,32 +31,28 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         try {
-            $request->user()->tokens()->delete();
+            $this->authService->logout($request);
 
             return response()->json([
                 'message' => 'Deslogado com sucesso'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
-                'message' => 'Erro ao deslogar' . $e->getMessage()
+                'message' => 'Erro ao deslogar: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    final public function refreshToken(Request $request): JsonResponse
+    public function refreshToken(Request $request): JsonResponse
     {
         try {
-            $user = $request->user();
-
-            $user->currentAccessToken()->delete();
-
-            Auth::logout();
+            $this->authService->refreshToken($request);
 
             return response()->json([
                 'message' => 'Token refreshed. Please log in again.',
                 'login_url' => url('/')
             ], 401);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'Could not refresh token',
                 'message' => $e->getMessage()
