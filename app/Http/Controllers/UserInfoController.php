@@ -16,12 +16,6 @@ class UserInfoController extends Controller
         try {
             $user = Auth::user();
 
-            if (!$user) {
-                return response()->json([
-                    'error' => 'Usuário não autenticado'
-                ], 401);
-            }
-
             return response()->json([
                 'user' => new UserResource($user),
             ], 200);
