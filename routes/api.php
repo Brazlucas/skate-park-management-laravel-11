@@ -1,13 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkateParkController;
 use App\Http\Controllers\RentalController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserInfoController;
 
-Route::apiResource('skate-parks', SkateParkController::class);
-Route::apiResource('rentals', RentalController::class)->shallow();
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [RegisteredUserController::class, 'register']);
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('user-info', UserInfoController::class);
+    Route::apiResource('skate-parks', SkateParkController::class);
+    Route::apiResource('rentals', RentalController::class)->shallow();
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh-token', [AuthController::class, 'refreshToken']);
 });
+

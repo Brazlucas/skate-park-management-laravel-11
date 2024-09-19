@@ -7,7 +7,8 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.9",
-        "laravel/sanctum": "^4.0",
+        "laravel/octane": "*",
+        "laravel/sanctum": "*",
         "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.9"
     },
