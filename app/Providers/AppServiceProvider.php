@@ -8,6 +8,8 @@ use App\Repositories\Contracts\SkateParkRepositoryInterface;
 use App\Repositories\Contracts\RentalRepositoryInterface;
 use App\Repositories\Eloquent\EloquentSkateParkRepository;
 use App\Repositories\Eloquent\EloquentRentalRepository;
+use App\Repositories\Contracts\LocationRepositoryInterface;
+use App\Repositories\Eloquent\EloquentLocationRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(SkateParkRepositoryInterface::class, EloquentSkateParkRepository::class);
         $this->app->bind(RentalRepositoryInterface::class, EloquentRentalRepository::class);
+        $this->app->bind(LocationRepositoryInterface::class, EloquentLocationRepository::class);
     }
 
     /**
