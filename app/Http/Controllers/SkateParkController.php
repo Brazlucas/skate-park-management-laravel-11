@@ -36,7 +36,10 @@ class SkateParkController extends Controller
 
         $skatePark = $this->repository->create($validated);
 
-        return response()->json($skatePark, 201);
+        return response()->json([
+            'data' => $skatePark,
+            'message' => 'Pista criada com sucesso'
+        ], 201);
     }
 
     public function update(StoreSkateParkRequest $request, $id): JsonResponse
