@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('skate_park_id')->constrained()->onDelete('cascade');
             $table->string('renter_name');
+            $table->foreignId('renter_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('start_time');
             $table->timestamp('end_time');
             $table->timestamps();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use App\Repositories\Contracts\SkateParkRepositoryInterface;
 use App\Http\Requests\SkatePark\StoreSkateParkRequest;
+use App\Models\SkatePark;
 
 class SkateParkController extends Controller
 {   
@@ -18,8 +19,30 @@ class SkateParkController extends Controller
 
     public function index()
     {
-        return $this->repository->all();
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Não autenticado'], 401);
+        }
+
+        $userId = $user->id;
+
+        $skateParks = SkatePark::with(['rentals' => function ($query) use ($userId) {
+            $query->where('renter_id', $userId);
+        }])->get();
+
+        $result = $skateParks->map(function ($skatePark) {
+            $isRented = $skatePark->rentals->isNotEmpty();
+
+            return array_merge(
+                $skatePark->toArray(),
+                ['rented' => $isRented]
+            );
+        });
+
+        return response()->json($result);
     }
+
 
     public function show($id)
     {

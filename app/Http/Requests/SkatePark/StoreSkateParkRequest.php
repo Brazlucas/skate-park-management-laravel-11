@@ -17,7 +17,7 @@ class StoreSkateParkRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'location' => 'required|string|max:255',
+            'location_id' => 'required|exists:locations,id',
         ];
     }
 }

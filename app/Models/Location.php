@@ -10,11 +10,17 @@ class Location extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'city',
+        'state',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
+
+    public function skateParks()
+    {
+        return $this->hasMany(SkatePark::class);
+    }
 }

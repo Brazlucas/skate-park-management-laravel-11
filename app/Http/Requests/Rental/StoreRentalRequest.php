@@ -17,6 +17,7 @@ class StoreRentalRequest extends FormRequest
             'renter_name' => 'required|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
+            'renter_id' => 'required|exists:users,id',
         ];
     }
 }

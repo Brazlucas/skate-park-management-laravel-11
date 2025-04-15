@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('internal-registration', [RegisteredUserController::class, 'internalRegistration']);
     Route::apiResource('skate-parks', SkateParkController::class);
     Route::apiResource('locations', LocationsController::class);
+    Route::get('rentals/available-hours', [RentalController::class, 'availableHours']);
     Route::apiResource('rentals', RentalController::class)->shallow();
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh-token', [AuthController::class, 'refreshToken']);

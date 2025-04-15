@@ -11,7 +11,7 @@ class EloquentLocationRepository implements LocationRepositoryInterface
 {
     public function all(): Collection
     {
-        return Location::all(['id', 'name']);
+        return Location::all(['id', 'city', 'state']);
     }
 
     public function find($id): Model

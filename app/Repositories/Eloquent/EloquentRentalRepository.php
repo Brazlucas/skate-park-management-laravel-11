@@ -14,7 +14,7 @@ class EloquentRentalRepository implements RentalRepositoryInterface
         return Rental::all();
     }
 
-    public function find($id): Model
+    public function find($id): ?Model
     {
         return Rental::find($id);
     }

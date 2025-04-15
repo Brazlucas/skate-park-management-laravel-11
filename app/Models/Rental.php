@@ -12,6 +12,7 @@ class Rental extends Model
     protected $fillable = [
         'skate_park_id',
         'renter_name',
+        'renter_id',
         'start_time',
         'end_time',
     ];
@@ -40,5 +41,10 @@ class Rental extends Model
     public function skatePark()
     {
         return $this->belongsTo(SkatePark::class);
+    }
+
+    public function renter()
+    {
+        return $this->belongsTo(User::class, 'renter_id');
     }
 }

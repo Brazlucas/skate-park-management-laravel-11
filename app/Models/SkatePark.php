@@ -10,13 +10,19 @@ class SkatePark extends Model
     use HasFactory;
 
     protected $fillable = [
+        'location_id',
         'name',
         'description',
-        'location',
+        'image',
     ];
 
     public function rentals()
     {
         return $this->hasMany(Rental::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }
