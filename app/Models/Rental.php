@@ -15,6 +15,7 @@ class Rental extends Model
         'renter_id',
         'start_time',
         'end_time',
+        'rent_value',
     ];
 
     public static function boot()

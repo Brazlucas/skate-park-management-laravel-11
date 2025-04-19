@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Rental;
 use Carbon\Carbon;
+use App\Models\Invoice;
 
 class RentalController extends Controller
 {
@@ -29,6 +30,27 @@ class RentalController extends Controller
         $validated = $request->validated();
 
         $rental = $this->repository->create($validated);
+
+        $start = Carbon::parse($validated['start_time']);
+        $end = Carbon::parse($validated['end_time']);
+        $hours = $end->diffInHours($start);
+        $rentValue = ($hours >= 10) ? 500 : $hours * 100;
+        $validated['rent_value'] = $rentValue;
+        $rental = Rental::create($validated);
+
+        $invoice = Invoice::firstOrCreate(
+            [
+                'user_id' => $validated['renter_id'],
+                'month' => $start->month,
+                'year' => $start->year,
+            ],
+            [
+                'amount' => 0,
+                'status' => 'pending',
+            ]
+        );
+
+        $invoice->increment('amount', $rentValue);
 
         return response()->json($rental, 201);
     }

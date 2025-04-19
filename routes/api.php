@@ -7,6 +7,7 @@ use App\Http\Controllers\RentalController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserInfoController;
 use App\Http\Controllers\LocationsController;
+use App\Http\Controllers\InvoiceController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [RegisteredUserController::class, 'register']);
@@ -27,5 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('rentals/available-hours', [RentalController::class, 'availableHours']);
     Route::get('rentals/user', [RentalController::class, 'userRentals']);
     Route::apiResource('rentals', RentalController::class)->shallow();
+
+    // Faturas
+    Route::apiResource('invoices', InvoiceController::class);
 });
 
