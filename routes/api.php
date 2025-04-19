@@ -11,15 +11,21 @@ use App\Http\Controllers\LocationsController;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [RegisteredUserController::class, 'register']);
 
+// User
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserInfoController::class, 'index']); // Todos os usuários
     Route::get('/me', [UserInfoController::class, 'me']); // Usuário autenticado
     Route::post('internal-registration', [RegisteredUserController::class, 'internalRegistration']);
-    Route::apiResource('skate-parks', SkateParkController::class);
-    Route::apiResource('locations', LocationsController::class);
-    Route::get('rentals/available-hours', [RentalController::class, 'availableHours']);
-    Route::apiResource('rentals', RentalController::class)->shallow();
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh-token', [AuthController::class, 'refreshToken']);
+
+    // Pistas
+    Route::apiResource('skate-parks', SkateParkController::class);
+    Route::apiResource('locations', LocationsController::class);
+
+    // Aluguéis
+    Route::get('rentals/available-hours', [RentalController::class, 'availableHours']);
+    Route::get('rentals/user', [RentalController::class, 'userRentals']);
+    Route::apiResource('rentals', RentalController::class)->shallow();
 });
 

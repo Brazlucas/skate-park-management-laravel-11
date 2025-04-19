@@ -113,4 +113,16 @@ class RentalController extends Controller
 
         return response()->json(array_values($available));
     }
+    
+    public function userRentals(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $rentals = Rental::with('skatePark')
+            ->where('renter_id', $userId)
+            ->orderByDesc('start_time')
+            ->get();
+
+        return response()->json($rentals);
+    }
 }
