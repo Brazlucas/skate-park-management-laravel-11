@@ -29,28 +29,38 @@ class RentalController extends Controller
     {
         $validated = $request->validated();
 
-        $rental = $this->repository->create($validated);
+        $hasConflict = Rental::where('skate_park_id', $validated['skate_park_id'])
+            ->where(function ($query) use ($validated) {
+                $query->where('start_time', '<', $validated['end_time'])
+                    ->where('end_time', '>', $validated['start_time']);
+            })->exists();
 
-        $start = Carbon::parse($validated['start_time']);
-        $end = Carbon::parse($validated['end_time']);
-        $hours = $end->diffInHours($start);
+        if ($hasConflict) {
+            return response()->json(['message' => 'Essa pista já está alugada nesse horário.'], 409);
+        }
+
+        $start = Carbon::parse($validated['start_time'])->setTimezone('America/Sao_Paulo');
+        $end = Carbon::parse($validated['end_time'])->setTimezone('America/Sao_Paulo');
+
+        $hours = $start->diffInHours($end);
         $rentValue = ($hours >= 10) ? 500 : $hours * 100;
         $validated['rent_value'] = $rentValue;
-        $rental = Rental::create($validated);
+        
+        $rental = $this->repository->create($validated);
 
-        $invoice = Invoice::firstOrCreate(
-            [
-                'user_id' => $validated['renter_id'],
-                'month' => $start->month,
-                'year' => $start->year,
-            ],
-            [
-                'amount' => 0,
-                'status' => 'pending',
-            ]
-        );
+        // $invoice = Invoice::firstOrCreate(
+        //     [
+        //         'user_id' => $validated['renter_id'],
+        //         'month' => $start->month,
+        //         'year' => $start->year,
+        //     ],
+        //     [
+        //         'amount' => 0,
+        //         'status' => 'pending',
+        //     ]
+        // );
 
-        $invoice->increment('amount', $rentValue);
+        // $invoice->increment('amount', $rentValue);
 
         return response()->json($rental, 201);
     }
