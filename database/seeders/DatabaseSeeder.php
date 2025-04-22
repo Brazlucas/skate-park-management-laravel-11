@@ -46,33 +46,33 @@ class DatabaseSeeder extends Seeder
             'image' => 'https://example.com/ibira.jpg',
         ]);
 
-        $startTime = Carbon::tomorrow()->setHour(10)->setMinute(0);
-        $endTime = Carbon::tomorrow()->setHour(12)->setMinute(0);
-        $rentValue = 200;
+        // $startTime = Carbon::tomorrow()->setHour(10)->setMinute(0);
+        // $endTime = Carbon::tomorrow()->setHour(12)->setMinute(0);
+        // $rentValue = 200;
 
-        $rental = Rental::create([
-            'skate_park_id' => $skatePark->id,
-            'renter_name' => $user->name,
-            'renter_id' => $user->id,
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'rent_value' => $rentValue,
-        ]);
+        // $rental = Rental::create([
+        //     'skate_park_id' => $skatePark->id,
+        //     'renter_name' => $user->name,
+        //     'renter_id' => $user->id,
+        //     'start_time' => $startTime,
+        //     'end_time' => $endTime,
+        //     'rent_value' => $rentValue,
+        // ]);
 
-        $month = $startTime->format('Y-m');
+        // $month = $startTime->format('Y-m');
         
-        $invoice = Invoice::firstOrCreate(
-            [
-                'user_id' => $user->id,
-                'month' => $month,
-            ],
-            [
-                'total' => 0,
-                'status' => 'pending',
-            ]
-        );
+        // $invoice = Invoice::firstOrCreate(
+        //     [
+        //         'user_id' => $user->id,
+        //         'month' => $month,
+        //     ],
+        //     [
+        //         'total' => 0,
+        //         'status' => 'pending',
+        //     ]
+        // );
 
-        $invoice->total += $rental->rent_value;
-        $invoice->save();
+        // $invoice->total += $rental->rent_value;
+        // $invoice->save();
     }
 }
