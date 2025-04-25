@@ -11,6 +11,7 @@ class Rental extends Model
 
     protected $fillable = [
         'skate_park_id',
+        'skate_park_name',
         'renter_name',
         'renter_id',
         'start_time',

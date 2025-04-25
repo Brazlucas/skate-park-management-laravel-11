@@ -25,11 +25,12 @@ class SkateParkController extends Controller
             return response()->json(['message' => 'Não autenticado'], 401);
         }
 
-        $userId = $user->id;
-
-        $skateParks = SkatePark::with(['rentals' => function ($query) use ($userId) {
-            $query->where('renter_id', $userId);
+        $skateParks = SkatePark::with(['rentals' => function ($query) use ($user) {
+            if (!$user->is_admin) {
+                $query->where('renter_id', $user->id);
+            }
         }])->get();
+
 
         $result = $skateParks->map(function ($skatePark) {
             $isRented = $skatePark->rentals->isNotEmpty();

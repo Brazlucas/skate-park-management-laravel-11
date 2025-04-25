@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $admin = User::factory()->create([
-            'name' => 'Chorão Admin',
+            'name' => 'Lucas ADM',
             'email' => 'lukkascomics@gmail.com',
             'password' => bcrypt('97322607l'),
             'address' => 'Rua Principal, 123',
@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = User::factory()->create([
-            'name' => 'Chorão Usuário',
+            'name' => 'Lucas Usuário',
             'email' => 'invadiumeupc123@hotmail.com',
             'password' => bcrypt('97322607l'),
             'address' => 'Rua Secundária, 456',
@@ -39,11 +39,16 @@ class DatabaseSeeder extends Seeder
             'state' => 'SP',
         ]);
 
+        $location = Location::create([
+            'city' => 'Guarulhos',
+            'state' => 'SP',
+        ]);
+
         $skatePark = SkatePark::create([
             'name' => 'Pista do Ibirapuera',
             'description' => 'Pista tradicional com ótima estrutura para manobras.',
             'location_id' => $location->id,
-            'image' => 'https://example.com/ibira.jpg',
+            'image' => 'https://www.princeofstreets.com.br/blog/wp-content/uploads/2022/12/Foto-1-Vans-Skate-Park-1024x791.jpg',
         ]);
 
         // $startTime = Carbon::tomorrow()->setHour(10)->setMinute(0);

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('rentals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('skate_park_id')->constrained()->onDelete('cascade');
+            $table->string('skate_park_name');
             $table->string('renter_name');
             $table->decimal('rent_value', 10, 2)->default(0);
             $table->foreignId('renter_id')->constrained('users')->onDelete('cascade');
